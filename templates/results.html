@@ -1,0 +1,29 @@
+{% extends 'layout.html' %}
+{% block content %}
+<h1>Results</h1>
+<ul class="results">
+{% for image, dist, url in images %}
+    <li>
+        <img src="{{ url }}">
+        <div class="info">
+            Distance from query image: {{ dist }}<br />
+            First found on: {{ image.created_at.isoformat() }}<br />
+            Found at: {{ image.url }}<br />
+            Usages:
+            <ul>
+                {% for usage in image.usages %}
+                    <li>
+                        On {{ usage.context.timestamp.isoformat() }}<br />
+                        At {{ usage.context.url }}
+                        <p>{{ usage.context.content }}</p>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </li>
+{% endfor %}
+</ul>
+{% endblock %}
+
+
+

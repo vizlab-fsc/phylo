@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>vizlab search</title>
+  <style>
+  html, body {
+      margin: 0;
+      padding: 1em;
+      font-family: sans-serif;
+  }
+  img {
+      max-width: 400px;
+      max-height: 400px;
+  }
+  .results > li {
+      margin: 2em 0;
+      padding: 1em 0;
+      border-bottom: 4px solid #ddd;
+      list-style-type: none;
+  }
+  </style>
+</head>
+
+<body>
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+</body>
+</html>
+
