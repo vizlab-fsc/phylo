@@ -23,7 +23,7 @@ def allowed_file(filename):
 def build_index():
     q = session.query(models.Image.hash, models.Image.id)
     hashes, ids = zip(*q.all())
-    hashes = [hash.hex_to_hash(h).hash.flatten() for h in hashes]
+    hashes = [hash.normalize(hash.hex_to_hash(h).hash).flatten() for h in hashes]
     hashes = np.stack(hashes)
     hashes = hashes.astype('float32')
     ids = np.array(ids)
