@@ -29,8 +29,9 @@ def build_index():
     ids = np.array(ids)
 
     # <https://github.com/facebookresearch/faiss/wiki/Faiss-indexes>
-    # idx_ = faiss.IndexLSH(d, 2048) # this gets better more bits
+    # idx_ = faiss.IndexLSH(d, D*2) # this gets better more bits
     # idx_ = faiss.IndexFlatL2(d) # best, but brute-force, and stores full vectors
+    # idx_ = faiss.IndexHNSWFlat(D, 16)
     # see <https://github.com/facebookresearch/faiss/wiki/Getting-started-tutorial>
     idx_ = faiss.IndexFlatIP(D) # might be best option?
     idx = faiss.IndexIDMap(idx_) # so we can specify our own indices
@@ -52,15 +53,15 @@ def main():
         if f and f.filename and allowed_file(f.filename):
             img = Image.open(f.stream)
             h = hash.dhash(img, hash_size=HASH_SIZE)
-            query = h.hash.flatten().astype('float32')
+            query = hash.normalize(h.hash.flatten()).astype('float32')
             dists, ids = idx.search(np.array([query]), 10)
             dists, ids = dists[0].tolist(), ids[0].tolist()
             images = session.query(models.Image).filter(models.Image.id.in_(ids)).all()
-            images = reversed([
+            images = [
                 (img, dist, s3.generate_presigned_url(
                     'get_object',
                     Params={'Bucket': bucket_name, 'Key': img.key}, ExpiresIn=1800))
-                for img, dist in zip(images, dists)])
+                for img, dist in zip(images, dists)]
             return render_template('results.html', images=images)
     return render_template('index.html')
 
