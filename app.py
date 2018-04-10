@@ -9,6 +9,7 @@ s3 = boto3.client('s3')
 bucket_name = 'vizlab-images'
 
 MAX_RESULTS = 10
+MAX_DISTANCE = 80
 HASH_SIZE = 16 # must be power of 2
 
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
@@ -21,7 +22,7 @@ def allowed_file(filename):
 
 
 def build_index():
-    lsh = LSHash(16, HASH_SIZE**2)
+    lsh = LSHash(32, HASH_SIZE**2)
     q = session.query(models.Image.hash, models.Image.id)
     for h, id in q.all():
         h = hash.hex_to_hash(h).hash.flatten()
@@ -39,6 +40,7 @@ def search(img):
 
 
 app = Flask(__name__)
+print('Building index...')
 lsh = build_index()
 print('Done building index')
 
@@ -58,6 +60,8 @@ def main():
                     'get_object',
                     Params={'Bucket': bucket_name, 'Key': img.key}, ExpiresIn=1800))
                 for img in images]
+            images = [im for im in images if im[1] <= MAX_DISTANCE]
+            images = sorted(images, key=lambda i: i[1])
             return render_template('results.html', images=images)
     return render_template('index.html')
 

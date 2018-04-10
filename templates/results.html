@@ -2,6 +2,9 @@
 {% block content %}
 <h1>Results</h1>
 <ul class="results">
+{% if not images %}
+    <h2>No results found</h2>
+{% endif %}
 {% for image, dist, url in images %}
     <li>
         <img src="{{ url }}">
